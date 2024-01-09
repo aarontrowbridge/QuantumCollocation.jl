@@ -357,24 +357,36 @@ end
 
 function UnitaryMinimumTimeProblem(
     prob::QuantumControlProblem;
+    constraints::Union{Vector{<:AbstractConstraint}, Nothing}=nothing,
+    objective::Union{Objective, Nothing}=nothing,
     kwargs...
 )
     params = deepcopy(prob.params)
     trajectory = copy(prob.trajectory)
     system = prob.system
-    objective = Objective(params[:objective_terms])
     integrators = prob.integrators
-    constraints = [
-        params[:linear_constraints]...,
-        NonlinearConstraint.(params[:nonlinear_constraints])...
-    ]
+
+    if isnothing(objective)
+        objective = Objective(params[:objective_terms])
+    end
+
+    if isnothing(constraints)
+        constraints = [
+            params[:linear_constraints]...,
+            NonlinearConstraint.(params[:nonlinear_constraints])...
+        ]
+        build_constraints=false
+    else
+        build_constraints=true
+    end
+
     return UnitaryMinimumTimeProblem(
         trajectory,
         system,
         objective,
         integrators,
         constraints;
-        build_trajectory_constraints=false,
+        build_trajectory_constraints=build_constraints,
         kwargs...
     )
 end
@@ -456,17 +468,28 @@ end
 function UnitaryRobustnessProblem(
     Hₑ::AbstractMatrix{<:Number},
     prob::QuantumControlProblem;
+    constraints::Union{Vector{<:AbstractConstraint}, Nothing}=nothing,
+    objective::Union{Objective, Nothing}=nothing,
     kwargs...
 )
     params = deepcopy(prob.params)
     trajectory = copy(prob.trajectory)
     system = prob.system
-    objective = Objective(params[:objective_terms])
     integrators = prob.integrators
-    constraints = [
-        params[:linear_constraints]...,
-        NonlinearConstraint.(params[:nonlinear_constraints])...
-    ]
+
+    if isnothing(objective)
+        objective = Objective(params[:objective_terms])
+    end
+
+    if isnothing(constraints)
+        constraints = [
+            params[:linear_constraints]...,
+            NonlinearConstraint.(params[:nonlinear_constraints])...
+        ]
+        build_constraints=false
+    else
+        build_constraints=true
+    end
 
     return UnitaryRobustnessProblem(
         Hₑ,
@@ -475,7 +498,7 @@ function UnitaryRobustnessProblem(
         objective,
         integrators,
         constraints;
-        build_trajectory_constraints=false,
+        build_trajectory_constraints=build_constraints,
         kwargs...
     )
 end
