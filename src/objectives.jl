@@ -1,7 +1,7 @@
 module Objectives
 
 export Objective
-
+export DefaultObjective
 export QuantumObjective
 export QuantumStateObjective
 export QuantumUnitaryObjective
@@ -85,6 +85,36 @@ function sparse_to_moi(A::SparseMatrixCSC)
     vals = [A[i,j] for (i,j) ∈ inds]
     return (inds, vals)
 end
+
+"""
+    DefaultObjective
+
+    
+"""
+function DefaultObjective()
+    params = Dict()
+
+	@views function L(Z⃗::AbstractVector{<:Real}, Z::NamedTrajectory)
+        return 0.0
+    end
+
+    @views function ∇L(Z⃗::AbstractVector{<:Real}, Z::NamedTrajectory)
+        ∇ = zeros(Z.dim * Z.T)
+        return ∇
+    end
+
+    function ∂²L_structure(Z::NamedTrajectory)
+        structure = []
+        return structure
+    end
+
+    @views function ∂²L(Z⃗::AbstractVector{<:Real}, Z::NamedTrajectory; return_moi_vals=true)
+        return return_moi_vals ? [] : spzeros(Z.dim * Z.T, Z.dim * Z.T)
+    end
+
+	return Objective(L, ∇L, ∂²L, ∂²L_structure, Dict[params])
+end
+
 """
     QuantumObjective
 
@@ -802,7 +832,7 @@ function InfidelityRobustnessObjective(
             if Z.timestep isa Symbol 
                 t_slice = slice(t, Z.components[Z.timestep], Z.dim)
                 ∂R = Uₜ'Hₑ*Uₜ
-                ∇[t_slice] .= tr(∂R*R + R*∂R) / norm(Hₑ) / T
+                ∇[t_slice] .= real(tr(∂R*R + R*∂R)) / norm(Hₑ) / T
             end
         end
         return ∇ / size(R, 1)
