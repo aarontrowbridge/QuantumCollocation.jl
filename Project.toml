@@ -30,6 +30,7 @@ Symbolics = "0c5d862f-8b57-4792-8d23-62f2024744c7"
 TrajectoryIndexingUtils = "6dad8b7f-dd9a-4c28-9b70-85b9a079bfc8"
 
 [compat]
+Arpack = "0.5"
 BenchmarkTools = "1.3"
 CairoMakie = "0.10, 0.11"
 Colors = "0.12"
