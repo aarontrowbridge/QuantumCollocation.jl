@@ -46,6 +46,7 @@ MathOptInterface = "1.20"
 NamedTrajectories = "0.1"
 Reexport = "1.2"
 Revise = "3.5"
+Symbolics = "5"
 TrajectoryIndexingUtils = "0.1"
 julia = "1.9, 1.10"
 
