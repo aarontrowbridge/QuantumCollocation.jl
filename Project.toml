@@ -28,6 +28,7 @@ TrajectoryIndexingUtils = "6dad8b7f-dd9a-4c28-9b70-85b9a079bfc8"
 [compat]
 BenchmarkTools = "1.3"
 CairoMakie = "0.10, 0.11, 0.12"
+Distributions = "0.25"
 Einsum = "0.4"
 ExponentialAction = "0.2"
 ForwardDiff = "0.10"
