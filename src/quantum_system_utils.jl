@@ -4,6 +4,7 @@ export operator_algebra
 export is_reachable
 
 using ..EmbeddedOperators
+using ..QuantumSystems
 
 using LinearAlgebra
 using SparseArrays
@@ -154,8 +155,8 @@ function operator_algebra(
 end
 
 function fit_gen_to_basis(
-    basis::AbstractVector{<:AbstractMatrix{<:T}},
-    gen::AbstractMatrix{<:T}
+    gen::AbstractMatrix{<:T},
+    basis::AbstractVector{<:AbstractMatrix{<:T}}
 ) where T<:Number
     A = stack(vec.(basis))
     b = vec(gen)
@@ -163,8 +164,8 @@ function fit_gen_to_basis(
 end
 
 function is_in_span(
-    basis::AbstractVector{<:AbstractMatrix},
-    gen::AbstractMatrix;
+    gen::AbstractMatrix,
+    basis::AbstractVector{<:AbstractMatrix};
     subspace_indices::AbstractVector{<:Int}=1:size(gen, 1),
     atol=eps(Float32),
     return_effective_gen=false,
@@ -172,7 +173,7 @@ function is_in_span(
     g_basis = [deepcopy(b[subspace_indices, subspace_indices]) for b ∈ basis]
     linearly_independent_subset!(g_basis)
     # Traceless basis needs traceless fit
-    x = fit_gen_to_basis(g_basis, gen)
+    x = fit_gen_to_basis(gen, g_basis)
     g_eff = sum(x .* g_basis)
     ε = norm(g_eff - gen, 2)
     if return_effective_gen
@@ -194,8 +195,8 @@ is_reachable(hamiltonians, gate, subspace_levels, levels; kwargs...)
     - `levels::Vector{<:Int}`: levels of the system
 """
 function is_reachable(
-    hamiltonians::AbstractVector{<:AbstractMatrix},
-    gate::AbstractMatrix;
+    gate::AbstractMatrix,
+    hamiltonians::AbstractVector{<:AbstractMatrix};
     subspace_indices::AbstractVector{<:Int}=1:size(gate, 1),
     compute_basis=true,
     remove_trace=true,
@@ -215,11 +216,25 @@ function is_reachable(
     end
 
     return is_in_span(
-        basis,
         generator,
+        basis,
         subspace_indices=subspace_indices,
         atol=atol
     )
+end
+
+function is_reachable(
+    gate::AbstractMatrix,
+    system::QuantumSystem;
+    use_drift::Bool=true,
+    kwargs...
+)
+    if !iszero(system.H_drift) && use_drift
+        hamiltonians = [system.H_drift, system.H_drives...]
+    else
+        hamiltonians = system.H_drives
+    end
+    return is_reachable(gate, hamiltonians; kwargs...)
 end
 
 

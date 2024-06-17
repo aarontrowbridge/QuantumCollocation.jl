@@ -63,7 +63,17 @@ end
     # Check 1 qubit with complete basis
     gen = map(A -> kron_from_dict(A, H_ops), ["X", "Y"])
     target = H_ops["Z"]
-    @test is_reachable(gen, target, compute_basis=true, verbose=false)
+    @test is_reachable(target, gen, compute_basis=true, verbose=false)
+
+    # System
+    sys = QuantumSystem([GATES[:X], GATES[:Y], GATES[:Z]])
+    target = GATES[:Z]
+    @test is_reachable(target, sys)
+
+    # System with drift
+    sys = QuantumSystem(GATES[:Z], [GATES[:X]])
+    target = GATES[:Z]
+    @test is_reachable(target, sys)
 
     # Check 2 qubit with complete basis
     XI = GATES[:X] ⊗ GATES[:I]
@@ -85,16 +95,31 @@ end
     CX = [1 0 0 0; 0 1 0 0; 0 0 0 1; 0 0 1 0]
     
     # Pass
-    @test is_reachable(complete_gen, R2)
-    @test is_reachable(complete_gen, CZ)
-    @test is_reachable(complete_gen, CX)
-    @test is_reachable(complete_gen, XI)
+    @test is_reachable(R2, complete_gen)
+    @test is_reachable(CZ, complete_gen)
+    @test is_reachable(CX, complete_gen)
+    @test is_reachable(XI, complete_gen)
 
     # Mostly fail
-    @test !is_reachable(incomplete_gen, R2)
-    @test !is_reachable(incomplete_gen, CZ)
-    @test !is_reachable(incomplete_gen, CX)
-    @test is_reachable(incomplete_gen, XI)
+    @test !is_reachable(R2, incomplete_gen)
+    @test !is_reachable(CZ, incomplete_gen)
+    @test !is_reachable(CX, incomplete_gen)
+    @test is_reachable(XI, incomplete_gen)
+
+    # QuantumSystems
+    complete_gen_sys = QuantumSystem(complete_gen)
+    incomplete_gen_sys = QuantumSystem(incomplete_gen)
+    # Pass
+    @test is_reachable(R2, complete_gen_sys)
+    @test is_reachable(CZ, complete_gen_sys)
+    @test is_reachable(CX, complete_gen_sys)
+    @test is_reachable(XI, complete_gen_sys)
+
+    # Mostly fail
+    @test !is_reachable(R2, incomplete_gen_sys)
+    @test !is_reachable(CZ, incomplete_gen_sys)
+    @test !is_reachable(CX, incomplete_gen_sys)
+    @test is_reachable(XI, incomplete_gen_sys)
 end
 
 @testitem "Lie Algebra subspace reachability" begin
