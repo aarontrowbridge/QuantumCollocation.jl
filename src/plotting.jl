@@ -11,6 +11,11 @@ using ..Problems
 
 pretty_print(X::AbstractMatrix) = Base.show(stdout,"text/plain", X)
 
+function get_layout(index::Int, n::Int)
+    √n = isqrt(n) + 1
+    return ((index - 1) ÷ √n + 1, (index - 1) % √n + 1)
+end
+
 # """
 #     plot_unitary_populations(
 #         traj::NamedTrajectory;
