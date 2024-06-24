@@ -36,6 +36,54 @@ This implementation is possible because direct collocation allows for the dynami
 
 ## Index
 
+```@raw html
+<div class="mermaid">
+graph TD
+    subgraph QuantumCollocations.jl
+        A["<code>QuantumCollocations.jl</code>"]
+       
+        subgraph Integrators
+            B["<code>UnitaryPadeIntegrator</code>"]
+        end
+       
+        subgraph QuantumSystems
+            C["<code>G</code>"]
+            D["<code>AbstractQuantumSystem</code>"]
+            E["<code>QuantumSystem</code>"]
+            F["<code>QuantumSystemCoupling</code>"]
+            G["<code>H</code>"]
+        end
+       
+        subgraph ProblemTemplate
+            H["<code>UnitaryMinimumTimeProblem</code>"]
+            I["<code>UnitarySmoothPulseProblem</code>"]
+        end
+       
+        subgraph QuantumUtils
+            J["<code>annihilate</code>"]
+            K["<code>create</code>"]
+            L["<code>kron_from_dict</code>"]
+            M["<code>operator_from_dict</code>"]
+            N["<code>quad</code>"]
+            O["<code>number</code>"]
+            P["<code>quantum_state</code>"]
+            Q["<code>vec^-1</code>"]
+        end
+       
+        subgraph Losses
+            S["<code>unitary_fidelity</code>"]
+            R["<code>isovec_unitary_fidelity</code>"]
+        end
+    end
+
+    A --> Integrators
+    A --> QuantumSystems
+    A --> ProblemTemplate
+    A --> QuantumUtils
+    A --> Losses
+</div>
+```
+
 ```@index
 ```
 
